@@ -145,7 +145,9 @@ Twitter.prototype.postLoad = function() {
     $('#refresh').html(
         '<p class="title">Pull down to refresh</p><p>Last Updated: ' +
         this.getPrettyLastUpdated() + '</p>');
-    
+};
+
+Twitter.prototype.postRender = function() {
     /* Scroll the viewport */
     $('#refresh').show(0, function() {
         var elt = $('#statuses')[0];
@@ -156,10 +158,6 @@ Twitter.prototype.postLoad = function() {
         }
         $('html, body').animate({scrollTop: pos}, 200);
     });
-};
-
-Twitter.prototype.postRender = function() {
-    /* Not sure if this is needed */
 };
 
 Twitter.prototype.buildStatusesLoadedCallback = function() {
