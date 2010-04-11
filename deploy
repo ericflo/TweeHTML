@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+rsync -au --delete . ericflo@eflorenzano.com:/home/ericflo/eflorenzano/media/tweehtml
