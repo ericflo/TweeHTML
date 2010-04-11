@@ -72,6 +72,7 @@ TwitterUtils.prototype.annotateTweet = function(text) {
 var twitterUtils = new TwitterUtils();
 
 function Twitter(username) {
+    this.animationSpeed = 600;
     this.loading = false;
     this.lastUpdated = null;
     this.username = username;
@@ -127,14 +128,14 @@ Twitter.prototype.slideLeft = function() {
     var currentMargin = $('body').css('marginLeft');
     currentMargin = parseInt(currentMargin.replace('px', ''), 10);
     var newMargin = currentMargin - $($('.panel')[0]).width();
-    $('body').animate({'marginLeft': newMargin}, 200);
+    $('body').animate({'marginLeft': newMargin}, this.animationSpeed);
 };
 
 Twitter.prototype.slideRight = function(leftPanel) {
     var currentMargin = $('body').css('marginLeft');
     currentMargin = parseInt(currentMargin.replace('px', ''), 10);
     var newMargin = currentMargin + $($('.panel')[0]).width();
-    $('body').animate({'marginLeft': newMargin}, 200);
+    $('body').animate({'marginLeft': newMargin}, this.animationSpeed);
 }
 
 Twitter.prototype.setPanelHeight = function(panel) {
@@ -230,7 +231,7 @@ Twitter.prototype.postRender = function() {
             pos += elt.offsetTop;
             elt = elt.offsetParent;
         }
-        $('html, body').animate({scrollTop: pos}, 200);
+        $('html, body').animate({scrollTop: pos}, this.animationSpeed);
     });
 };
 
