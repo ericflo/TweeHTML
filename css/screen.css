@@ -7,10 +7,14 @@ caption, th {text-align:left;}
 h1, h2, h3, h5, h5, h6 {font-size:100%;}
 q:before, q:after {content:'';}
 
-body { font-family: Helvetica; margin: 0; padding: 0; width: 320px; font-size: 14px; color: #333; background-color: #E2E7ED; }
+body { font-family: Helvetica; margin: 0; padding: 0; font-size: 14px; color: #333; background-color: #E2E7ED; }
 
 a { text-decoration: none; color: #333; }
 a.tweet-link { color: #339; }
+
+.panel { width: 320px; float: left; }
+
+.avatar { width: 48px; height: 48px; -webkit-border-radius: 6px; -webkit-box-shadow: 0px 1px 2px #BBB; }
 
 #refresh { border-bottom: 1px solid #A0ADB7; text-align: center; height: 60px; padding-top: 24px; color: #788193; text-shadow: #F1F4F7 0px 1px 1px; }
 #refresh .title { font-weight: bold; font-size: 16px; }
@@ -18,11 +22,14 @@ a.tweet-link { color: #339; }
 
 .status { border-bottom: 1px solid #EEE; border-top: 1px solid #FBFBFB; background-image: -webkit-gradient(linear, left top, left bottom, from(#F5F5F5), color-stop(0.015, #FFFFFF), color-stop(0.5, #FFFFFF), to(#EEE)); }
 
-.status .avatar { width: 48px; height: 48px; margin: 4px 0 0 4px; float: left; -webkit-border-radius: 6px; -webkit-box-shadow: 0px 1px 2px #BBB; }
+.status .avatar { margin: 4px 0 4px 4px; float: left; }
 
 .status .content { width: 260px; float: right; overflow: hidden; margin: 4px 4px 4px 0; }
 .status .content .username { font-weight: bold; }
 .status .content .timestamp { float: right; color: #99D; font-size: 13px; }
 .status .content .status-text { margin: 2px 0 0 0; }
+
+.status.selected { color: #FFF; background-image: -webkit-gradient(linear, left top, left bottom, from(#2200CC), color-stop(0.4, #3367CC), color-stop(0.6, #3367CC), to(#2200CC)); }
+.status.selected .timestamp { color: #FFF; }
 
 .clear { clear: both; }

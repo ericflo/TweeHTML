@@ -75,8 +75,10 @@ function Twitter(username) {
     this.loading = false;
     this.lastUpdated = null;
     this.username = username;
-    this.currentPanel = 'public';
+    this.currentPanel = 'sample';
     this.statuses = {
+        'all': [],
+        'sample': [],
         'public': [],
         'timeline': [],
         'home': []
@@ -105,9 +107,31 @@ Twitter.prototype.renderStatus = function(status) {
     return this.addStatusHandlers(rendered);
 };
 
+Twitter.prototype.displaySingleStatus = function(statusId) {
+    var status = this.statuses.all[statusId];
+    var username = status.user.screen_name;
+    var html = $('<div class="user"><div class="avatar" ' +
+        'style="background-image: url(http://img.tweetimag.es/i/' + username +
+        '_n)"></div><span class="name">' + status.user.name +
+        '</span><span class="username">' + username + '</span>' +
+        '<div class="status-text">' + status.text + '</div></div>');
+    $('#single-status').html(html);
+    var elt = $('#single-status')[0];
+    var pos = 0;
+    while(elt != null) {
+        pos += elt.offsetLeft;
+        elt = elt.offsetParent;
+    }
+    $('html, body').animate({scrollLeft: pos}, 200);
+};
+
 Twitter.prototype.addStatusHandlers = function(element) {
+    var instance = this;
     element.bind('click', function() {
-        /* Navigate to the single-status view */
+        $('#statuses .selected').removeClass('selected');
+        $(this).addClass('selected');
+        var statusId = parseInt(this.id.replace('status-', ''), 10);
+        instance.displaySingleStatus(statusId);
         return false;
     });
     return element;
@@ -171,6 +195,7 @@ Twitter.prototype.buildStatusesLoadedCallback = function() {
                 continue;
             }
             instance.statuses[instance.currentPanel][status.id] = status;
+            instance.statuses.all[status.id] = status;
             statusBundle.append(instance.renderStatus(status));
         }
         $('#statuses').prepend(statusBundle);
@@ -182,7 +207,12 @@ Twitter.prototype.buildStatusesLoadedCallback = function() {
 Twitter.prototype.fetch = function() {
     this.preLoad();
     var url = null;
-    if(this.currentPanel === 'public') {
+    var dataType = 'jsonp';
+    if(this.currentPanel === 'sample') {
+        url = 'sample.json';
+        dataType = 'json';
+    }
+    else if(this.currentPanel === 'public') {
         url = 'http://api.twitter.com/1/statuses/public_timeline.json';
     }
     else if(this.currentPanel === 'timeline') {
@@ -195,7 +225,7 @@ Twitter.prototype.fetch = function() {
         'url': url,
         'success': this.buildStatusesLoadedCallback(),
         'error': this.postLoad,
-        'dataType': 'jsonp'
+        'dataType': dataType
     });
 };
 
