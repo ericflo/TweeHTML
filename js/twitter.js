@@ -75,7 +75,8 @@ function Twitter(username) {
     this.loading = false;
     this.lastUpdated = null;
     this.username = username;
-    this.currentPanel = 'sample';
+    /*this.currentPanel = 'sample';*/
+    this.currentPanel = 'public';
     this.statuses = {
         'all': [],
         'sample': [],
@@ -84,6 +85,7 @@ function Twitter(username) {
         'home': []
     };
     this.currentRenderer = 'simple';
+    this.bindTweetReloader();
 }
 
 Twitter.prototype.renderSimpleStatus = function(status) {
@@ -99,30 +101,78 @@ Twitter.prototype.renderSimpleStatus = function(status) {
     return $(html);
 };
 
+Twitter.prototype.renderDetailedStatus = function(status) {
+    var username = status.user.screen_name;
+    var text = twitterUtils.annotateTweet(status.text);
+    var html = ('<div class="user"><div class="avatar" ' +
+        'style="background-image: url(http://img.tweetimag.es/i/' + username +
+        '_n)"></div><span class="name">' + status.user.name +
+        '</span><span class="username">' + username + '</span>' +
+        '<div class="status-text">' + text + '</div></div>');
+    return $(html);
+};
+
 Twitter.prototype.renderStatus = function(status) {
     var rendered = null;
     if(this.currentRenderer === 'simple') {
         rendered = this.renderSimpleStatus(status);
     }
+    else if(this.currentRenderer === 'detailed') {
+        rendered = this.renderDetailedStatus(status);
+    }
     return this.addStatusHandlers(rendered);
 };
 
+Twitter.prototype.slideLeft = function() {
+    var currentMargin = $('body').css('marginLeft');
+    currentMargin = parseInt(currentMargin.replace('px', ''), 10);
+    var newMargin = currentMargin - $($('.panel')[0]).width();
+    $('body').animate({'marginLeft': newMargin}, 200);
+};
+
+Twitter.prototype.slideRight = function(leftPanel) {
+    var currentMargin = $('body').css('marginLeft');
+    currentMargin = parseInt(currentMargin.replace('px', ''), 10);
+    var newMargin = currentMargin + $($('.panel')[0]).width();
+    $('body').animate({'marginLeft': newMargin}, 200);
+}
+
+Twitter.prototype.setPanelHeight = function(panel) {
+    panel.css('marginTop', $(window).scrollTop() + 'px');
+};
+
 Twitter.prototype.displaySingleStatus = function(statusId) {
+    this.currentRenderer = 'detailed';
     var status = this.statuses.all[statusId];
-    var username = status.user.screen_name;
-    var html = $('<div class="user"><div class="avatar" ' +
-        'style="background-image: url(http://img.tweetimag.es/i/' + username +
-        '_n)"></div><span class="name">' + status.user.name +
-        '</span><span class="username">' + username + '</span>' +
-        '<div class="status-text">' + status.text + '</div></div>');
-    $('#single-status').html(html);
-    var elt = $('#single-status')[0];
-    var pos = 0;
-    while(elt != null) {
-        pos += elt.offsetLeft;
-        elt = elt.offsetParent;
+    var rendered = this.renderStatus(status);
+    $('#single-status').html(rendered);
+    $('body').css('overflow', 'hidden');
+    this.unbindTweetReloader();
+    this.setPanelHeight($('#single-status'));
+    this.slideLeft();
+};
+
+Twitter.prototype.buildTweetReloader = function() {
+    var instance = this;
+    if(this.tweetReloader) {
+        return this.tweetReloader;
     }
-    $('html, body').animate({scrollLeft: pos}, 200);
+    this.tweetReloader = function() {
+        var threshold = $(window).scrollTop();
+        var refresh = $('#refresh');
+        if(!instance.loading && threshold < refresh.offset().top + refresh.height()) {
+            instance.fetch();
+        }
+    };
+    return this.tweetReloader;
+};
+
+Twitter.prototype.bindTweetReloader = function() {
+    $(window).bind('scroll', this.buildTweetReloader());
+};
+
+Twitter.prototype.unbindTweetReloader = function() {
+    $(window).unbind('scroll', this.buildTweetReloader());
 };
 
 Twitter.prototype.addStatusHandlers = function(element) {
